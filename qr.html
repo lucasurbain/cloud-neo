@@ -24,7 +24,7 @@
                 </div>
         
                 <video id="qr-video"></video>
-        
+
                 <div class="container">
                     <div class="qr-code">
                         <img src="" alt="qr-code" class="hide">
@@ -94,21 +94,30 @@
             let qrValue = result.data;
             qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qrValue}`;
 
-            video.remove();
-            qrImg.classList.remove("hide");
-            subtitle.innerText = "Le QR CODE à bien été enregistré !";
-            dataContainer.innerHTML = "<p>"+ qrValue +"</p>";
-
-            scanner.stop();
- 
+            var regex = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
+            var isMacAdress = regex.test(qrValue);
+            if(isMacAdress == true) {
+                console.log("condition validée");
+                video.remove();
+                qrImg.classList.remove("hide");
+                subtitle.innerText = "Le QR CODE à bien été enregistré !";
+                dataContainer.innerHTML = "<p>"+ qrValue +"</p>";
+                scanner.stop();
+            }else {
+                console.log("QR CODE INVALIDE");
+                video.classList.add("error");
+                subtitle.innerText = "Le QR CODE est invalide !";
+                setInterval(removeError, 5000);
+            }
         }
 
-    
-
-
-
-
-    
+        function removeError() {
+            const video = document.getElementById('qr-video');
+            const subtitle = document.querySelector(".subtitle__container p");
+            video.classList.remove("error");
+            subtitle.innerText = "Veuillez scannez le QR CODE fournit sur votre objet connecté.";
+        }
+ 
     
         // ####### Web Cam Scanning #######
     
@@ -205,6 +214,11 @@
             border: 5px solid #001F27;
             width: 100%;
        }
+
+       .error {
+            border: 5px solid red;
+       }
+
     
     </style>
 
